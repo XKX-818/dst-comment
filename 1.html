@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>饥友合体·天下无敌 </title>
+    <style>
+        /* ===== 全局样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f0ebe3;
+            padding: 30px 20px;
+            color: #2c2c2c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: scroll;
+        }
+
+        /* ===== 主容器 ===== */
+        .wrapper {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffffcc;
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            padding: 30px 35px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== 顶栏标题 ===== */
+        .main-title {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 4px;
+            color: #3a2c1e;
+        }
+        .sub-title {
+            text-align: center;
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px dashed #ddd;
+            padding-bottom: 18px;
+        }
+
+        /* ===== 导航标签（三兄弟） ===== */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            border-bottom: 3px solid #e0d6cb;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 600;
+            color: #8a7a6a;
+            cursor: pointer;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.25s ease;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            background: #f4ede6;
+            color: #5a4a3a;
+        }
+
+        /* 激活状态的标签 */
+        .tab-btn.active {
+            color: #3a2c1e;
+            background: #ffffff;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            border-bottom: 4px solid #b88a6b;
+        }
+
+        /* ===== 内容面板（默认全部隐藏） ===== */
+        .content-panel {
+            display: none;          /* 默认看不见 */
+            animation: fadeUp 0.3s ease;
+        }
+
+        /* 只有加上 .active 类才会显示 */
+        .content-panel.active {
+            display: block;
+        }
+
+        /* 入场小动画（让切换更丝滑） */
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 内容区通用样式 ===== */
+        h2 {
+            font-size: 24px;
+            border-left: 6px solid #b88a6b;
+            padding-left: 14px;
+            margin-bottom: 20px;
+            color: #3a2c1e;
+        }
+
+        h3 {
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 18px;
+            color: #4a372a;
+        }
+
+        ul, ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* ===== 角色卡片（用在“角色介绍”里） ===== */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);  /* 两列 */
+            gap: 14px;
+        }
+
+        .role-card {
+            background: #f8f4ef;
+            padding: 16px 20px;
+            border-radius: 14px;
+            border-left: 6px solid #b88a6b;
+            transition: 0.2s;
+        }
+        .role-card:hover {
+            background: #f3ede6;
+            transform: translateX(4px);
+        }
+        .role-card h3 {
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+        .role-card p {
+            margin: 4px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .role-tag {
+            display: inline-block;
+            background: #d6c4b0;
+            font-size: 12px;
+            padding: 0 12px;
+            border-radius: 20px;
+            margin-top: 6px;
+            color: #2c2c2c;
+        }
+
+        /* ===== 实用技巧里的高亮块 ===== */
+        .tip-box {
+            background: #e8f0e6;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin: 12px 0;
+            border-left: 5px solid #5d8a5e;
+        }
+        .tip-box strong {
+            color: #2d5a2e;
+        }
+
+        /* ===== 响应式：手机缩小间距 ===== */
+        @media (max-width: 600px) {
+            .role-grid {
+                grid-template-columns: 1fr;  /* 手机单列 */
+                }
+            .wrapper { padding: 18px 16px; }
+            .tab-btn { font-size: 15px; padding: 10px 0; }
+            .main-title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+
+        <!-- ====== 顶栏 ====== -->
+        <h1 class="main-title">饥荒不老 · 我们不散</h1>
+        <p class="sub-title">浅大人带你玩饥荒，让你不在忧殇</p>
+
+        <!-- ====== 导航标签 ====== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tab1">👥 角色介绍</button>
+            <button class="tab-btn" data-tab="tab2">📋 任务流程</button>
+            <button class="tab-btn" data-tab="tab3">💡 实用技巧</button>
+            <button class="tab-btn" data-tab="tab4">❔ 其他</button>
+            <button class="tab-btn" data-tab="tab5">👀 好友留言</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 面板1：角色介绍 -->
+        <!-- ========================================================= -->
+        <div id="tab1" class="content-panel active">
+            <h2>👥 角色细节</h2>
+            <div class="role-grid">
+
+                 <div class="role-card">
+                    <h3>👻 沃拓克斯（Wortox）</h3>
+                    <p><strong>定位：</strong>功能型，全图传送</p>
+                    <p><strong>攻略：</strong>团队作用大，有杀人蜂平原直接起飞。</p>
+                    <p>可制作双尾心，解锁技能树可带队友全图传送，自身拥有灵魂跳跃技能，跑图方便。</p>
+                    <p>功能性极强</p>
+                    <p><strong>技能树：</strong>推荐点淘气包技能树，和好友一起游玩可以电亮三级双尾心</p>
+                    <p>沃拓克斯灵魂超过上线会爆魂，携带灵魂盒可以增加爆魂都上限</p>
+                    <span class="role-tag">✅ 浅大人最爱</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>🧔 威尔逊（Wilson）</h3>
+                    <p><strong>定位：</strong>均衡型，新手首选</p>
+                    <p><strong>核心：</strong>胡子保温，剃毛做复活雕像。</p>
+                    <span class="role-tag">✅ 纯新手入坑</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>👧 温蒂（Wendy）</h3>
+                    <p><strong>定位：</strong>召唤型，清怪利器</p>
+                    <p><strong>核心：</strong>阿比盖尔之花召姐姐，三种形态越战越强。</p>
+                    <span class="role-tag">✅ 不擅长走位</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>🔥 薇洛（Willow）</h3>
+                    <p><strong>定位：</strong>火系生存，自带照明</p>
+                    <p><strong>核心：</strong>无限打火机，理智低时自动放火（小心烧家）。</p>
+                    <span class="role-tag">✅ 不用愁燃料</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>🪓 伍迪（Woodie）</h3>
+                    <p><strong>定位：</strong>变身型，万能工具人</p>
+                    <p><strong>核心：</strong>无限露西斧，可变为鹅（水上漂）、鹿人（站撸）、海狸（砍树）。</p>
+                    <span class="role-tag">✅ 多功能体验</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>⚔️ 薇格弗德（Wigfrid）</h3>
+                    <p><strong>定位：</strong>战斗型，正面硬刚</p>
+                    <p><strong>核心：</strong>1.25倍伤害，打怪回血回san，但只吃肉！</p>
+                    <span class="role-tag">✅ 喜欢正面战斗</span>
+                </div>
+
+                <div class="role-card">
+                    <h3>💪 沃尔夫冈（Wolfgang）</h3>
+                    <p><strong>定位：</strong>高输出型，吃饱就是神</p>
+                    <p><strong>核心：</strong>吃饱攻击翻倍，但饿得飞快（1.5倍速度）。</p>
+                    <span class="role-tag">✅ 适合老手</span>
+                </div>
+               
+
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 面板2：任务流程 -->
+        <!-- ========================================================= -->
+        <div id="tab2" class="content-panel">
+            <h2>📋 全季节任务流程</h2>
+
+            <h3>📅 前7天 · 开局必做</h3>
+            <ul>
+                <li><strong>第1天：</strong>捡树枝、干草、燧石，天黑前做火把。</li>
+                <li><strong>第2~3天：</strong>找金矿 → 做科学机器 → 解锁背包、铲子。</li>
+                <li><strong>第4~5天：</strong>沿地图边缘跑图，标记矿区、沼泽、猪村、牛群。</li>
+                <li><strong>第6~7天：</strong>在牛群或猪村附近选址建家（优先靠近资源）。</li>
+            </ul>
+
+            <h3>🌳 第8~20天 · 秋季囤货</h3>
+            <ul>
+                <li>用铲子把浆果丛、草根、树枝挖回基地种植（记得施肥）。</li>
+                <li>囤积木头、石头、干草、树枝 — 冬天植物停止生长。</li>
+                <li>准备过冬装备：牛毛 + 牛角 → 牛角帽（保暖神器）。</li>
+                <li>造出 <strong>烹饪锅</strong> 和 <strong>晒肉架</strong>，高效转化食物。</li>
+            </ul>
+
+            <h3>❄️ 第21~35天 · 冬天生存</h3>
+            <ul>
+                <li>出门必带 <strong>暖石</strong>（烤热后再出门）。</li>
+                <li>戴牛角帽或冬帽，避免冻伤掉血。</li>
+                <li>去海象平原打 <strong>海象</strong>，掉 <strong>象牙</strong>（加速手杖）和 <strong>贝雷帽</strong>（回精神神器）。</li>
+                <li>提前准备 <strong>大理石甲</strong> 和 <strong>火腿棒</strong>，迎接冬季Boss <strong>巨鹿</strong>。</li>
+            </ul>
+
+            <h3>🌸 春天 & ☀️ 夏天 · 进阶提示</h3>
+            <ul>
+                <li><strong>春天：</strong>做避雷针，小心青蛙雨，多囤粮准备度夏。</li>
+                <li><strong>夏天：</strong>做 <strong>雪球发射器</strong> 给植物降温，出门带遮阳伞和西瓜帽。</li>
+                <li>夏天Boss <strong>蚁狮</strong> 会地震砸家，提前用石头换懒人传送塔或献祭。</li>
+            </ul>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 面板3：实用技巧 -->
+        <!-- ========================================================= -->
+        <div id="tab3" class="content-panel">
+            <h2>💡 浅大人焚决</h2>
+
+            <div class="tip-box">
+                <strong>🥘 食谱优先级：</strong><br>
+                前中期做 <strong>肉丸</strong>（1肉+3浆果/蔬菜）最划算。<br>
+                回血神菜 <strong>波兰水饺</strong>（1蛋+1肉+1蔬菜+1填充物），回40血。
+            </div>
+
+            <div class="tip-box">
+                <strong>🧠 理智（San值）管理：</strong><br>
+                采花（+5 san/朵）、烤 <strong>绿蘑菇</strong>（+15 san）、戴 <strong>贝雷帽</strong> 或 <strong>花环</strong>。<br>
+                实在不行就睡帐篷，但会掉饥饿值。
+            </div>
+
+            <div class="tip-box">
+                <strong>🛡️ 战斗走位技巧：</strong><br>
+                大部分怪物攻击前摇很长，打 <strong>2下走1下</strong> 是通用节奏。<br>
+                打Boss前穿 <strong>大理石甲</strong> 虽然减速，但减伤极高，适合站撸。
+            </div>
+
+            <div class="tip-box">
+                <strong>🏠 基地防破坏：</strong><br>
+                建家后第一时间做 <strong>避雷针</strong>（防雷劈烧家）。<br>
+                用 <strong>石墙</strong> 围住基地，门口放 <strong>狗牙陷阱</strong> 对付猎犬袭击。
+            </div>
+
+            <div class="tip-box">
+                <strong>🗺️ 探图小技巧：</strong><br>
+                沿着 <strong>卵石路</strong> 走大概率能找到猪王村或棋盘地形。<br>
+                开局前三天不要停，多跑图比什么都重要。
+            </div>
+
+        </div>
+        
+        <!-- ========================================================= -->
+        <!-- 面板4：其他 -->
+        <!-- ========================================================= -->
+        <div id="tab4" class="content-panel">
+        <p>敬请期待！</p>
+        </div> 
+
+        <!-- ========================================================= -->
+        <!-- 面板5：好友留言 -->
+        <!-- ========================================================= -->
+        <div id="tab5" class="content-panel">
+        <p>期待你的留言！</p>
+
+        <script src="https://giscus.app/client.js"
+        data-repo="XKX-818/dst-comment"
+        data-repo-id="R_kgDOT9YaBw"
+        data-mapping="number"
+        data-term="5"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+        </script>
+
+        </div> 
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- JavaScript：切换逻辑 -->
+    <!-- ========================================================= -->
+    <script>
+        // 1. 拿到所有按钮 和 所有内容面板
+        const buttons = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.content-panel');
+
+        // 2. 给每个按钮绑定点击事件
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+
+                // 2.1 移除所有按钮的 .active 类（让它们都变灰）
+                buttons.forEach(b => b.classList.remove('active'));
+
+                // 2.2 给当前点击的按钮加上 .active 类（高亮它）
+                this.classList.add('active');
+
+                // 2.3 获取这个按钮要显示的面板ID（data-tab 属性的值）
+                const targetId = this.getAttribute('data-tab'); // 比如 "tab1"
+
+                // 2.4 隐藏所有面板（移除 .active 类）
+                panels.forEach(p => p.classList.remove('active'));
+
+                // 2.5 显示对应的面板（根据ID找到它，加上 .active 类）
+                document.getElementById(targetId).classList.add('active');
+
+            });
+        });
+    </script>
+
+</body>
+</html>
